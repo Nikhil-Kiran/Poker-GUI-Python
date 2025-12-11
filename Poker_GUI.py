@@ -16,7 +16,7 @@ class PokerGUI:
         self.img = self.load_images()
 
       
-        # Titles + Frames
+        #Titles + Frames
 
         tk.Label(root, text="Opponent Cards", font=("Arial", 14, "bold"),
                  bg="darkgreen", fg="white").grid(row=0, pady=(10,0))
@@ -33,7 +33,7 @@ class PokerGUI:
         self.bot = tk.Frame(root, bg="black")
         self.bot.grid(row=5, pady=(0,10))
 
-        # CARD LABELS
+        #card labels
       
         self.comp  = [tk.Label(self.top, bg="white") for i in range(2)]
         self.table = [tk.Label(self.mid, bg="white") for i in range(5)]
@@ -43,7 +43,7 @@ class PokerGUI:
         for i,l in enumerate(self.table): l.grid(row=0, column=i, padx=10)
         for i,l in enumerate(self.me):    l.grid(row=0, column=i, padx=10)
 
-        # BUTTONS + INFO
+        #buttons+info
 
         self.ctrl = tk.Frame(root, bg="darkgreen")
         self.ctrl.grid(row=6, pady=20)
@@ -59,7 +59,7 @@ class PokerGUI:
 
         self.set()
 
-    # IMAGE LOADING
+    #image-loading
   
     def load_images(self):
         import os
@@ -72,7 +72,7 @@ class PokerGUI:
         return imgs
 
 
-    # GAME SET
+    #game-setup
 
     def set(self):
         self.yb = 100
@@ -88,19 +88,19 @@ class PokerGUI:
         self.turn = deck[7]
         self.river = deck[8]
 
-        # blinds
+        #blinds
         self.yb -= 1
         self.cb -= 1
         self.pot = 2
         self.stage = "pre"
 
-        # Show hole cards
+        #Showing hole cards
         for i,c in enumerate(self.you):
             self.me[i].config(image=self.img[c])
         for i,c in enumerate(self.cs):
             self.comp[i].config(image=self.img[c])
 
-        # Clear table
+        #Clear table
         for t in self.table:
             t.config(image="")
 
@@ -109,7 +109,7 @@ class PokerGUI:
     def update(self, msg=""):
         self.info.config(text=f"You: {self.yb}   Opponent: {self.cb}   Pot: {self.pot}\n{msg}")
 
-    # BET POPUP
+    #bet popup
 
     def ask_bet(self, title):
         while True:
@@ -118,7 +118,7 @@ class PokerGUI:
             if 0 <= bet <= self.yb: return bet
             messagebox.showerror("Invalid Bet", "Enter a valid bet not exceeding your balance.") #title,text
 
-    # SHOW CARDS
+    #show cards
 
 
     def show_flop(self):
@@ -133,7 +133,7 @@ class PokerGUI:
         self.show_turn()
         self.table[4].config(image=self.img[self.river])
 
-    # BET HANDLING
+    #bet handling
 
     def handle_bet(self, bet, next_func):
         self.yb -= bet
@@ -146,14 +146,14 @@ class PokerGUI:
             return
 
         if bet == 0:
-            next_func("check")
+            next_func()
         else:
             self.cb -= bet
             self.pot += bet
             self.update()
-            next_func("call")
+            next_func()
 
-    # BUTTON ACTIONS
+    #button actions
  
 
     def action(self):
@@ -173,27 +173,27 @@ class PokerGUI:
             b = self.ask_bet("River")
             self.handle_bet(b, self.showdown)
 
-    # STAGE TRANSITIONS
+    #stage transition
  
 
-    def to_flop(self, _):
+    def to_flop(self):
         self.show_flop()
         self.stage = "flop"
         self.update("Flop shown. Enter bet.")
 
-    def to_turn(self, _):
+    def to_turn(self):
         self.show_turn()
         self.stage = "turn"
         self.update("Turn shown. Enter bet.")
 
-    def to_river(self, _):
+    def to_river(self):
         self.show_river()
         self.stage = "river"
         self.update("River shown. Enter bet.")
 
-    # SHOWDOWN
+    #showdown
 
-    def showdown(self, _=""):
+    def showdown(self):
         board = self.flop + [self.turn, self.river]
         eval = Evaluator()
 
@@ -226,8 +226,9 @@ class PokerGUI:
         self.play_again_btn.destroy()
         self.set()
         
-# RUN
+#run
 root = tk.Tk()
 PokerGUI(root)
 root.mainloop()
+
 
